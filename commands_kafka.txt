@@ -1,0 +1,24 @@
+1. Lancer le serveur Zookeeper: > bin\windows\zookeeper-server-start.bat config/zookeeper.properties
+2. Lancer le Boker KAFKA : > bin\windows\kafka-server-start.bat config/server.properties
+3. Lancer Kafka-console-consumer :
+> bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic R4 --property print.key=true
+4. Lancer kafka-console-producer : > bin\windows\kafka-console-producer.bat --broker-list localhost:9092 --topic R4
+
+Lancer le serveur Zookeeper:
+
+===========> Docker
+
+> docker-compose up -d
+> docker exec -- interactive -- tty broker kafka-console-consumer --bootstrap-server broker:9092 --topic R2
+> docker exec -- interactive -- tty broker kafka-console-producer --bootstrap-server broker:9092 --topic R2
+
+
+
+===========> Tested:
+
+1/ exec in integrated terminal mode : > docker exec -it <container_id> /bin/sh
+2/create a kafka topic: > kafka-topics --create --topic test-topic --bootstrap-server localhost:29092 --partitions 1 --replication-factor 1
+3/list kafka's topics: > kafka-topics --list --bootstrap-server localhost:29092
+4/ a. create a producer and publish messages: > kafka-console-producer --topic test-topic --bootstrap-server localhost:29092
+   b. then start sending messages
+5/  kafka-console-consumer --topic test-topic --bootstrap-server localhost:29092 --from-beginning

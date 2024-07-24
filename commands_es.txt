@@ -1,0 +1,5 @@
+===========> Tested:
+
+1/ exec in integrated terminal mode : > docker exec -it <container_id> /bin/sh
+2/create an index : > curl -X PUT http://localhost:9200/products
+3/index a product: > curl -X POST -H 'Content-Type: application/json' -d '{ "name": "Awesome T-Shirt", "description": "This is an awesome t-shirt for casual wear.", "price": 19.99, "category": "Clothing", "brand": "Example Brand" }' http://localhost:9200/products/_doc
