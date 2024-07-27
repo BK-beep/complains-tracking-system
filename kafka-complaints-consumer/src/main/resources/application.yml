@@ -4,5 +4,3 @@ spring:
   application:
     name: kafka-complaints-consumer
 
-server:
-  port: 8081
