@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/complainproducer")
+@RequestMapping("/api/complaintproducer")
 public class Complaints {
     private final ComplainPublisher service;
     @PostMapping
-    public ResponseEntity<Void> sendComplain(
+    public ResponseEntity<String> sendComplain(
             @RequestBody Complaint complaint
     ){
         service.send(complaint);
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.ok("published");
     }
 }

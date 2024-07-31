@@ -13,7 +13,7 @@ public class KafkaProducer {
 
     public void sendMessage(Complaint message) {
         kafkaTemplate.send(TOPIC_NAME, message);
-        System.out.println("Complaint " + message +
+        System.out.println("Complaint " + message.toString() +
                 " has been sucessfully sent to the topic: " + TOPIC_NAME);
     }
 }
