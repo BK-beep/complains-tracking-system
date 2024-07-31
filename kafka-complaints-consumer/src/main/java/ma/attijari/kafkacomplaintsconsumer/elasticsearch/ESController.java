@@ -46,9 +46,10 @@ public class ESController {
         return deleted ? new ResponseEntity<>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/search")
+/*    @GetMapping("/search")
     public ResponseEntity<List<Complaint>> searchComplaints(@RequestParam String keyword) {
         List<Complaint> complaints = service.searchComplaints(keyword);
         return new ResponseEntity<>(complaints, HttpStatus.OK);
     }
+*/
 }

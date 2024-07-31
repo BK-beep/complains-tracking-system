@@ -2,11 +2,17 @@ package ma.attijari.kafkacomplaintsconsumer.elasticsearch;
 
 import lombok.RequiredArgsConstructor;
 import ma.attijari.kafkacomplaintsconsumer.models.Complaint;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
@@ -18,14 +24,13 @@ public class ESService {
             String id=UUID.randomUUID().toString();
             complaint.setComplaintId(id);
             System.out.println(id);
-
         }
         return complaintRepository.save(complaint);
     }
 
     public List<Complaint> getAllComplaints() {
-        complaintRepository.findAll();
-        return (List<Complaint>) complaintRepository.findAll();
+        Page<Complaint> page = complaintRepository.findAll(Pageable.unpaged());
+        return page.getContent();
     }
 
     public Complaint getComplaintById(String id) {
@@ -52,10 +57,6 @@ public class ESService {
                 .orElse(false);
     }
 
-    public List<Complaint> searchComplaints(String keyword) {
-        // This is a simple implementation. You might want to use more sophisticated
-        // search capabilities depending on your requirements and database
-        return (List<Complaint>) complaintRepository.findAll();
-    }
+
 
 }
