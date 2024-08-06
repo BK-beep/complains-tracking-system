@@ -1,5 +1,4 @@
 package ma.attijari.kafkacomplaintsproducer;
-
 import lombok.AllArgsConstructor;
 import ma.attijari.kafkacomplaintsproducer.models.Client;
 import ma.attijari.kafkacomplaintsproducer.models.Complaint;
@@ -13,20 +12,15 @@ import org.springframework.context.ApplicationContext;
 
 import java.util.*;
 import java.util.stream.Stream;
-
 @SpringBootApplication
 @AllArgsConstructor
 public class KafkaComplaintsProducerApplication {
-
 	private static ComplainPublisher complainPublisher;
-
 	public static void main(String[] args) {
 		ApplicationContext context = SpringApplication.run(KafkaComplaintsProducerApplication.class, args);
 		ComplainPublisher complainPublisher = context.getBean(ComplainPublisher.class);
-
 		int status = new Random().nextInt(ComplaintStatus.values().length);
 		int source = new Random().nextInt(ComplaintSource.values().length);
-
 		TimerTask task=new TimerTask() {
 			@Override
 			public void run() {

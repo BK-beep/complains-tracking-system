@@ -1,6 +1,6 @@
 spring:
   application:
-    name: kafka-complaints-consumer
+    name: ESSearchAPI
   cloud:
     config:
       uri: http://localhost:8888
