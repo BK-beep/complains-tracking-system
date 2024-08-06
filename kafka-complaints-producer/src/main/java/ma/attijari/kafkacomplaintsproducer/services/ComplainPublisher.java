@@ -1,5 +1,6 @@
 package ma.attijari.kafkacomplaintsproducer.services;
 
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import ma.attijari.kafkacomplaintsproducer.models.Complaint;
 import org.springframework.stereotype.Service;

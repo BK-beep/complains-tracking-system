@@ -1,5 +1,6 @@
 package ma.attijari.kafkacomplaintsproducer.services;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import ma.attijari.kafkacomplaintsproducer.models.Complaint;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
+@RequiredArgsConstructor
 public class KafkaProducerConfig {
     @Bean
     public ProducerFactory<String, Complaint> producerFactory() {

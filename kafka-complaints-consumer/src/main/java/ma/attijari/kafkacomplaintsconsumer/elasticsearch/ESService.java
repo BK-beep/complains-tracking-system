@@ -56,7 +56,4 @@ public class ESService {
                 })
                 .orElse(false);
     }
-
-
-
 }

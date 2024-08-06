@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/complaints")
+@RequestMapping("/api/comp")
 public class ESController {
     
     private final ESService service;
