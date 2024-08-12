@@ -25,8 +25,9 @@ public class ApiGatewayApplication {
 		RouteLocator routes = builder.routes()
 				.route("complaints_search", r -> r.path("/complaints/_search/**")
 						.uri("lb://ESSEARCHAPI")) // Load balancer (Eureka) service name
-				/*.route("host_route", r -> r.host("*.myhost.org")
-						.uri("http://httpbin.org"))
+				.route("Eréclamation", r -> r.host("/login/**")
+						.uri("http://localhost:4200"))
+				/*
 				.route("rewrite_route", r -> r.host("*.rewrite.org")
 						.filters(f -> f.rewritePath("/foo/(?<segment>.*)", "/${segment}"))
 						.uri("http://httpbin.org"))
