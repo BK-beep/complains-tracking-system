@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class KafkaConsumer {
 
     private final ESController controller;
-    @KafkaListener(topics = "comp",
+    @KafkaListener(topics = "complaints",
             groupId = "complaints_listeners",
             containerFactory = "complaintListener")
 

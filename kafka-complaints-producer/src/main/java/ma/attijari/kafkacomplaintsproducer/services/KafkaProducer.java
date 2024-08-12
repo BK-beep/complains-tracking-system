@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class KafkaProducer {
     private final KafkaTemplate<String, Complaint> kafkaTemplate;
-    private final String TOPIC_NAME= "comp";
+    private final String TOPIC_NAME= "complaints";
 
     public void sendMessage(Complaint message) {
         kafkaTemplate.send(TOPIC_NAME, message);

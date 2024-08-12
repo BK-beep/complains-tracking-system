@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/complaints/_search")
 public class API {
-    
+
     private final SService service;
     @GetMapping
     public ResponseEntity<List<Complaint>> find(
