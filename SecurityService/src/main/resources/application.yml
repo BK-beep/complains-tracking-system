@@ -1,0 +1,6 @@
+# Database connection properties
+spring:
+  application:
+    name: SecurityService
+  config:
+    import: optional:configserver:http://localhost:8888

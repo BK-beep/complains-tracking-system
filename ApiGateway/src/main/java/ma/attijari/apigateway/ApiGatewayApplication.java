@@ -13,9 +13,9 @@ public class ApiGatewayApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ApiGatewayApplication.class, args);
-		System.out.println("helloooo");
+		//System.out.println("helloooo");
 	}
-	@Bean
+	/*@Bean
 	public HttpClient httpClient() {
 		return HttpClient.create().resolver(DefaultAddressResolverGroup.INSTANCE);
 	}
@@ -27,14 +27,14 @@ public class ApiGatewayApplication {
 						.uri("lb://ESSEARCHAPI")) // Load balancer (Eureka) service name
 				.route("Eréclamation", r -> r.host("/login/**")
 						.uri("http://localhost:4200"))
-				/*
-				.route("rewrite_route", r -> r.host("*.rewrite.org")
-						.filters(f -> f.rewritePath("/foo/(?<segment>.*)", "/${segment}"))
-						.uri("http://httpbin.org"))
-				 */
+
+				//.route("rewrite_route", r -> r.host("*.rewrite.org")
+				//		.filters(f -> f.rewritePath("/foo/(?<segment>.*)", "/${segment}"))
+				//		.uri("http://httpbin.org"))
 				.build();
 		System.out.println("helloooo3");
 		return routes;
 	}
+	*/
 
 }
