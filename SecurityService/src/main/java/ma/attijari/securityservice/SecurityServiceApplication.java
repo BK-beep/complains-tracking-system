@@ -52,9 +52,9 @@ public class SecurityServiceApplication {
 
 			// Create users
 			Stream.of(
-					new AppUser("user1", "user1", passwordEncoder.encode("1234"), true, List.of(userRole)),
-					new AppUser("user2", "user2", passwordEncoder.encode("1234"), true, List.of(userRole)),
-					new AppUser("admin", "admin", passwordEncoder.encode("1234"), true, List.of(adminRole, userRole))
+					new AppUser("user1", "user1", passwordEncoder.encode("1234"),"user1@mail.com", true, List.of(userRole)),
+					new AppUser("user2", "user2", passwordEncoder.encode("1234"),"user2@mail.com", true, List.of(userRole)),
+					new AppUser("admin", "admin", passwordEncoder.encode("1234"),"admin@mail.com", true, List.of(adminRole, userRole))
 			).forEach(user -> {
 				userRepo.save(user);
 			});
