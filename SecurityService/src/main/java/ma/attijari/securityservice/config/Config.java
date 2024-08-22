@@ -35,7 +35,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
-@EnableWebSecurity
 @RequiredArgsConstructor
 
 public class Config {
@@ -56,8 +55,6 @@ public class Config {
         daoAuthenticationProvider.setHideUserNotFoundExceptions(false);
         return new ProviderManager(daoAuthenticationProvider);
     }
-
-
 
 
 
