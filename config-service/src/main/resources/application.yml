@@ -9,7 +9,7 @@ spring:
           default-label: master
           clone-on-start: true
           username: BK-beep
-          password: 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
+          password: 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
           force-pull: true
 server:
   port: 8888

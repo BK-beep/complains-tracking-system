@@ -36,39 +36,22 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @RequiredArgsConstructor
-
 public class Config {
 
-
     @Autowired
-    private CustomUserDetailsService userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
     @Autowired
-    private RsaKeyConfig rsaKeyConfig;
+    private final RsaKeyConfig rsaKeyConfig;
 
     @Bean
-    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService){
+    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService) {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
         daoAuthenticationProvider.setUserDetailsService(userDetailsService);
         daoAuthenticationProvider.setHideUserNotFoundExceptions(false);
         return new ProviderManager(daoAuthenticationProvider);
-    }
-
-
-
-    public UserDetailsManager UserDetailsManager(){
-        return new InMemoryUserDetailsManager(
-                User.withUsername("user")
-                        .password(passwordEncoder.encode("password"))
-                        .authorities("USER")
-                        .build(),
-                User.withUsername("admin")
-                        .password(passwordEncoder.encode("password"))
-                        .authorities("ADMIN")
-                        .build()
-        );
     }
 
     @Bean
@@ -80,31 +63,33 @@ public class Config {
                         .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .oauth2ResourceServer((oauth2) -> oauth2
+                .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(Customizer.withDefaults()));
 
         return http.build();
     }
+
     @Bean
-    public JwtEncoder jwtEncoder(){
-        JWK jwk=new RSAKey.Builder(rsaKeyConfig.publicKey()).privateKey(rsaKeyConfig.privateKey()).build();
-        JWKSource<SecurityContext> jwkSource=new ImmutableJWKSet<>(new JWKSet(jwk));
+    public JwtEncoder jwtEncoder() {
+        JWK jwk = new RSAKey.Builder(rsaKeyConfig.publicKey()).privateKey(rsaKeyConfig.privateKey()).build();
+        JWKSource<SecurityContext> jwkSource = new ImmutableJWKSet<>(new JWKSet(jwk));
         return new NimbusJwtEncoder(jwkSource);
     }
+
     @Bean
-    public JwtDecoder jwtDecoder(){
+    public JwtDecoder jwtDecoder() {
         return NimbusJwtDecoder.withPublicKey(rsaKeyConfig.publicKey()).build();
     }
+
     @Bean
-    CorsConfigurationSource corsConfigurationSource(){
-        CorsConfiguration corsConfiguration=new CorsConfiguration();
-        corsConfiguration.addExposedHeader("*");
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.addAllowedOrigin("*"); // Consider limiting to specific origins
         corsConfiguration.addAllowedHeader("*");
         corsConfiguration.addAllowedMethod("*");
-        corsConfiguration.addAllowedOrigin("*");
-        UrlBasedCorsConfigurationSource corsConfigurationSource=new UrlBasedCorsConfigurationSource();
-        corsConfigurationSource.registerCorsConfiguration("/**",corsConfiguration);
+        corsConfiguration.addExposedHeader("*");
+        UrlBasedCorsConfigurationSource corsConfigurationSource = new UrlBasedCorsConfigurationSource();
+        corsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
         return corsConfigurationSource;
     }
-
 }

@@ -23,7 +23,7 @@ public class ApiGatewayApplication {
 		//System.out.println("helloooo");
 	}
 	@Autowired
-	private JwtAuthenticationFilter jwtAuthenticationFilter;
+	private JwtAuthenticationGatewayFilter jwtAuthenticationGatewayFilter;
 
 
 	@Bean
@@ -32,11 +32,12 @@ public class ApiGatewayApplication {
 		return builder.routes()
 				.route("SecurityService", r  -> r
 						.path("SecurityService/**")
-						.filters(f -> f.filter(jwtAuthenticationFilter).stripPrefix(1))
+						//.filters(f -> f.filter(jwtAuthenticationFilter).stripPrefix(1))
+						.filters(f -> f.stripPrefix(1))
 						.uri("lb://SecurityService"))
 				.route("ESSearchAPI", r  -> r
 						.path("ESSearchAPI/**")
-						.filters(f -> f.filter(jwtAuthenticationFilter).stripPrefix(1))
+						.filters(f -> f.filter(jwtAuthenticationGatewayFilter).stripPrefix(1))
 						.uri("lb://ESSearchAPI"))
 				.build();
 

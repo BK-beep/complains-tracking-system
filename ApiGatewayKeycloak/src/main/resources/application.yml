@@ -1,6 +1,7 @@
 spring:
   application:
-    name: ApiGateway
+    name: ApiGatewayKeycloak
   config:
     import: optional:configserver:http://localhost:8888
-
+  main:
+    allow-bean-definition-overriding: true

@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: ApiGatewayKeycloak
+  cloud:
+    config:
+      uri: http://localhost/8888
+      enabled: true
+      fail-fast: false
+    discovery:
+      enabled: true
+  main:
+    allow-bean-definition-overriding: true

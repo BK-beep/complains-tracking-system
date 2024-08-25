@@ -33,6 +33,7 @@ public class AuthController {
     }
     @PostMapping("/register")
     public ResponseEntity<AppUser> registerUser(@RequestBody AppUser user) {
+        System.out.println("registering user");
         AppUser createdUser = userService.createUser(user);
         return ResponseEntity.ok(createdUser);
     }
