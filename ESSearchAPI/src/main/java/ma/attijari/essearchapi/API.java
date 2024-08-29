@@ -27,7 +27,11 @@ public class API {
     public ResponseEntity<Map<String, Object>> searchAllFieldsPre(@RequestParam String searchTerm,
                                                                   @RequestParam(defaultValue = "0") int page,
                                                                   @RequestParam(defaultValue = "5") int size) {
-        SearchPage<Complaint> complaints = service.searchAllFieldsWithNgram(searchTerm, page, size);
+        SearchPage<Complaint> complaints = service.searchAllFieldsWithNgram(
+                searchTerm,
+                page,
+                size
+        );
         Map<String, Object> response = new HashMap<>();
         response.put("complaints", complaints);
         response.put("currentPage", complaints.getNumber());
