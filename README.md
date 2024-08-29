@@ -51,3 +51,83 @@ MEM_LIMIT=1073741824
 # Project namespace (defaults to the current folder name if not set)
 #COMPOSE_PROJECT_NAME=myproject
 ```
+
+### Create elastic search index with ngram tokenizer fro full text search:
+use the kibana console, or Curl
+
+```
+DELETE complaints
+
+PUT /complaints
+{
+  "settings": {
+    "index": {
+      "max_ngram_diff": 5  // Set this value to match the difference you want between max_gram and min_gram
+    },
+    "analysis": {
+      "tokenizer": {
+        "ngram_tokenizer": {
+          "type": "ngram",
+          "min_gram": 1,
+          "max_gram": 5,  // Adjust as needed
+          "token_chars": ["letter", "digit"]
+        }
+      },
+      "analyzer": {
+        "ngram_analyzer": {
+          "type": "custom",
+          "tokenizer": "ngram_tokenizer",
+          "filter": ["lowercase"]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "complaintId": {
+        "type": "text",
+        "analyzer": "ngram_analyzer",
+        "search_analyzer": "standard"
+      },
+      "from": {
+        "properties": {
+          "name": {
+            "type": "text",
+            "analyzer": "ngram_analyzer",
+            "search_analyzer": "standard"
+          },
+          "email": {
+            "type": "text",
+            "analyzer": "ngram_analyzer",
+            "search_analyzer": "standard"
+          },
+          "phone": {
+            "type": "text",
+            "analyzer": "ngram_analyzer",
+            "search_analyzer": "standard"
+          }
+        }
+      },
+      "status": {
+        "type": "text",
+        "analyzer": "ngram_analyzer",
+        "search_analyzer": "standard"
+      },
+      "source": {
+        "type": "text",
+        "analyzer": "ngram_analyzer",
+        "search_analyzer": "standard"
+      }
+    }
+  }
+}
+
+
+
+GET complaints/_analyze
+{
+  "analyzer" : "ngram_analyzer",
+  "text":"software"
+}
+
+```
