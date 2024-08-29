@@ -2,28 +2,47 @@ package ma.attijari.essearchapi;
 
 import lombok.RequiredArgsConstructor;
 import ma.attijari.essearchapi.entities.Complaint;
-import ma.attijari.essearchapi.entities.ComplaintSource;
-import ma.attijari.essearchapi.entities.ComplaintStatus;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
+import org.springframework.data.elasticsearch.core.SearchHitSupport;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.SearchPage;
 import org.springframework.data.elasticsearch.core.query.Criteria;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.data.elasticsearch.core.SearchHit;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
-@org.springframework.stereotype.Service
+@Service
 @RequiredArgsConstructor
 public class SService {
-    //https://docs.spring.io/spring-data/elasticsearch/reference/elasticsearch/template.html#elasticsearch.operations.criteriaquery
 
     private final ElasticsearchTemplate elasticsearchTemplate;
 
-    public List<Complaint> find(String complaintId, String fromName, String fromEmail, String fromPhone, Date madeAt, String status, String source) {
-        Criteria criteria=new Criteria();
-        if (complaintId!=null && !complaintId.isEmpty()){
+    public List<Complaint> searchAllFields(String searchTerm) {
+        NativeQuery searchQuery = NativeQuery.builder()
+                .withQuery(q -> q
+                        .multiMatch(m -> m
+                                .query(searchTerm)
+                                .fields("complaintId", "from.name", "from.email", "from.phone", "status", "source")
+                        )
+                )
+                .build();
+
+        SearchHits<Complaint> searchHits = elasticsearchTemplate.search(searchQuery, Complaint.class);
+        return searchHits.getSearchHits().stream()
+                .map(SearchHit::getContent)
+                .collect(Collectors.toList());
+    }
+
+    public SearchPage<Complaint> find(String complaintId, String fromName, String fromEmail, String fromPhone,
+                                      Date madeAt, String status, String source, int page, int size) {
+        Criteria criteria = new Criteria();
+        if (complaintId != null && !complaintId.isEmpty()) {
             criteria.and(new Criteria("complaintId").is(complaintId));
         }
         if (fromName != null && !fromName.isEmpty()) {
@@ -35,7 +54,7 @@ public class SService {
         if (fromPhone != null && !fromPhone.isEmpty()) {
             criteria.and(new Criteria("from.phone").contains(fromPhone));
         }
-        if (fromPhone != null && !fromPhone.isEmpty()) {
+        if (madeAt != null) {
             criteria.and(new Criteria("madeAt").is(madeAt));
         }
         if (status != null && !status.isEmpty()) {
@@ -45,9 +64,26 @@ public class SService {
             criteria.and(new Criteria("source").is(source));
         }
 
-        CriteriaQuery query = new CriteriaQuery(criteria);
+        PageRequest pageRequest = PageRequest.of(page, size);
+        CriteriaQuery query = new CriteriaQuery(criteria).setPageable(pageRequest);
         SearchHits<Complaint> searchHits = elasticsearchTemplate.search(query, Complaint.class);
+        return SearchHitSupport.searchPageFor(searchHits, pageRequest);
+    }
 
-        return searchHits.stream().map(hit -> hit.getContent()).toList();
+    public SearchPage<Complaint> searchAllFieldsWithNgram(String searchTerm,int page, int size) {
+        NativeQuery searchQuery = NativeQuery.builder()
+                .withQuery(q -> q
+                        .multiMatch(m -> m
+                                .query(searchTerm)
+                                .fields("complaintId", "from.name", "from.email", "from.phone", "status", "source")
+                                .analyzer("ngram_analyzer") // Use the n-gram analyzer
+                        )
+                )
+                .build();
+
+
+        PageRequest pageRequest = PageRequest.of(page, size);
+        SearchHits<Complaint> searchHits = elasticsearchTemplate.search(searchQuery, Complaint.class);
+        return SearchHitSupport.searchPageFor(searchHits, pageRequest);
     }
 }
