@@ -79,11 +79,11 @@ public class SService {
                                 .analyzer("ngram_analyzer") // Use the n-gram analyzer
                         )
                 )
+                .withPageable(PageRequest.of(page, size))  // Add pagination here
                 .build();
 
-
-        PageRequest pageRequest = PageRequest.of(page, size);
         SearchHits<Complaint> searchHits = elasticsearchTemplate.search(searchQuery, Complaint.class);
-        return SearchHitSupport.searchPageFor(searchHits, pageRequest);
+        return SearchHitSupport.searchPageFor(searchHits, PageRequest.of(page, size));
+
     }
 }
