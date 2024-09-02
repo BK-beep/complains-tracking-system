@@ -19,6 +19,11 @@ public class API {
 
     private final SService service;
 
+    @PostMapping
+    public ResponseEntity<Complaint> editComplaint(@RequestBody Complaint complaint) {
+        return ResponseEntity.ok(service.editComplaint(complaint));
+    }
+
     @GetMapping("/keyword")
     public ResponseEntity<Map<String, Object>> searchAllFields(@RequestParam String searchTerm) {
         return ResponseEntity.ok(Map.of("complaints", service.searchAllFields(searchTerm)));

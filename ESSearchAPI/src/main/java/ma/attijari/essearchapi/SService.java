@@ -23,6 +23,9 @@ public class SService {
 
     private final ElasticsearchTemplate elasticsearchTemplate;
 
+    public Complaint editComplaint(Complaint complaint) {
+        return elasticsearchTemplate.save(complaint);
+    }
     public List<Complaint> searchAllFields(String searchTerm) {
         NativeQuery searchQuery = NativeQuery.builder()
                 .withQuery(q -> q
