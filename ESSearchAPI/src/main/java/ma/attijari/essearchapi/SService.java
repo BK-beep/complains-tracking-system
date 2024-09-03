@@ -89,4 +89,12 @@ public class SService {
         return SearchHitSupport.searchPageFor(searchHits, PageRequest.of(page, size));
 
     }
+
+    public Complaint findById(String id) {
+        return elasticsearchTemplate.get(id, Complaint.class);
+    }
+
+    public String delete(String id) {
+        return elasticsearchTemplate.delete(id, Complaint.class);
+    }
 }

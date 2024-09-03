@@ -75,4 +75,13 @@ public class API {
         response.put("totalPages", complaints.getTotalPages());
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Complaint> findById(@PathVariable String id) {
+        return ResponseEntity.ok(service.findById(id));
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> delete(@PathVariable String id) {
+        return ResponseEntity.ok(service.delete(id));
+    }
 }
