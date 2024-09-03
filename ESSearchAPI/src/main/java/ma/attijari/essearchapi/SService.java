@@ -2,6 +2,7 @@ package ma.attijari.essearchapi;
 
 import lombok.RequiredArgsConstructor;
 import ma.attijari.essearchapi.entities.Complaint;
+import ma.attijari.essearchapi.entities.StatusChange;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
@@ -10,6 +11,7 @@ import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.SearchPage;
 import org.springframework.data.elasticsearch.core.query.Criteria;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
+import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.data.elasticsearch.core.SearchHit;
 
@@ -24,7 +26,11 @@ public class SService {
     private final ElasticsearchTemplate elasticsearchTemplate;
 
     public Complaint editComplaint(Complaint complaint) {
-        return elasticsearchTemplate.save(complaint);
+        Complaint old=elasticsearchTemplate.get(complaint.getComplaintId(),Complaint.class);
+            if(!old.getStatus().equals(complaint.getStatus())){
+                old.updateStatus(complaint.getStatus());
+        }
+        return elasticsearchTemplate.save(old);
     }
     public List<Complaint> searchAllFields(String searchTerm) {
         NativeQuery searchQuery = NativeQuery.builder()
@@ -71,6 +77,36 @@ public class SService {
         CriteriaQuery query = new CriteriaQuery(criteria).setPageable(pageRequest);
         SearchHits<Complaint> searchHits = elasticsearchTemplate.search(query, Complaint.class);
         return SearchHitSupport.searchPageFor(searchHits, pageRequest);
+    }
+    public List<Complaint> all(String complaintId, String fromName, String fromEmail, String fromPhone,
+                                      Date madeAt, String status, String source) {
+        Criteria criteria = new Criteria();
+        if (complaintId != null && !complaintId.isEmpty()) {
+            criteria.and(new Criteria("complaintId").is(complaintId));
+        }
+        if (fromName != null && !fromName.isEmpty()) {
+            criteria.and(new Criteria("from.name").contains(fromName));
+        }
+        if (fromEmail != null && !fromEmail.isEmpty()) {
+            criteria.and(new Criteria("from.email").contains(fromEmail));
+        }
+        if (fromPhone != null && !fromPhone.isEmpty()) {
+            criteria.and(new Criteria("from.phone").contains(fromPhone));
+        }
+        if (madeAt != null) {
+            criteria.and(new Criteria("madeAt").is(madeAt));
+        }
+        if (status != null && !status.isEmpty()) {
+            criteria.and(new Criteria("status").is(status));
+        }
+        if (source != null && !source.isEmpty()) {
+            criteria.and(new Criteria("source").is(source));
+        }
+
+        CriteriaQuery query = new CriteriaQuery(criteria);
+        SearchHits<Complaint> searchHits = elasticsearchTemplate.search(query, Complaint.class);
+
+        return searchHits.stream().map(hit -> hit.getContent()).toList();
     }
 
     public SearchPage<Complaint> searchAllFieldsWithNgram(String searchTerm,int page, int size) {

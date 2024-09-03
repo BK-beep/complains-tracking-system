@@ -4,39 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.CompletionField;
-import org.springframework.data.elasticsearch.annotations.Document;
-
-import java.util.Date;
-
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Document(indexName = "complaints")
-public class Complaint {
-    @Id
-    private String complaintId;
-
-    private Client from;
-
-    private Date madeAt;
-
-    private ComplaintStatus status;
-
-    private ComplaintSource source;
-
-    private String description;
-}
-
-
-/*
-package ma.attijari.essearchapi.entities;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.CompletionField;
 import org.springframework.data.elasticsearch.annotations.Document;
 
 import java.util.ArrayList;
@@ -68,12 +35,34 @@ public class Complaint {
     }
 
 }
+
+/*package ma.attijari.essearchapi.entities;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.CompletionField;
+import org.springframework.data.elasticsearch.annotations.Document;
+
+import java.util.Date;
+
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-class StatusChange {
-    private ComplaintStatus oldStatus;
-    private ComplaintStatus newStatus;
-    private Date changeDate;
+@Document(indexName = "complaints")
+public class Complaint {
+    @Id
+    private String complaintId;
+
+    private Client from;
+
+    private Date madeAt;
+
+    private ComplaintStatus status;
+
+    private ComplaintSource source;
+
+    private String description;
 }
- */
+*/

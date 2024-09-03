@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -45,7 +46,7 @@ public class API {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/all")
+    @GetMapping("/find")
     public ResponseEntity<Map<String,Object>> find(
             @RequestParam(required = false) String complaintId,
             @RequestParam(required = false) String fromName,
@@ -73,6 +74,29 @@ public class API {
         response.put("currentPage", complaints.getNumber());
         response.put("totalItems", complaints.getTotalElements());
         response.put("totalPages", complaints.getTotalPages());
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/all")
+    public ResponseEntity<Map<String,Object>> find(
+            @RequestParam(required = false) String complaintId,
+            @RequestParam(required = false) String fromName,
+            @RequestParam(required = false) String fromEmail,
+            @RequestParam(required = false) String fromPhone,
+            @RequestParam(required = false) Date madeAt,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String source
+    ) {
+        List<Complaint> complaints = service.all(
+                complaintId,
+                fromName,
+                fromEmail,
+                fromPhone,
+                madeAt,
+                status,
+                source
+        );
+        Map<String, Object> response = new HashMap<>();
+        response.put("complaints", complaints);
         return ResponseEntity.ok(response);
     }
 
