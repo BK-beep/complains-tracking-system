@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import ma.attijari.essearchapi.entities.Complaint;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchPage;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -105,7 +106,11 @@ public class API {
         return ResponseEntity.ok(service.findById(id));
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable String id) {
-        return ResponseEntity.ok(service.delete(id));
+    public ResponseEntity<Map<String,String>> delete(@PathVariable String id) {
+        Map<String,String> deleted=new HashMap<>();
+        System.out.println("delete"+id);
+        service.delete(id);
+        deleted.put("deleted",id);
+        return new ResponseEntity<>(deleted,HttpStatus.OK);
     }
 }

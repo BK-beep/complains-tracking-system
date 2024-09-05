@@ -18,11 +18,12 @@ import static org.springframework.data.web.config.EnableSpringDataWebSupport.Pag
 @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO)
 public class KafkaComplaintsProducerApplication {
 	private static ComplainPublisher complainPublisher;
+	private static final Random random = new Random();
 	public static void main(String[] args) {
 		ApplicationContext context = SpringApplication.run(KafkaComplaintsProducerApplication.class, args);
 		ComplainPublisher complainPublisher = context.getBean(ComplainPublisher.class);
 		//int status = new Random().nextInt(ComplaintStatus.values().length);
-		int source = new Random().nextInt(ComplaintSource.values().length);
+		int source = random.nextInt(ComplaintSource.values().length);
 		List<StatusChange> statusHistory = new ArrayList<>();
 		statusHistory.add(new StatusChange(ComplaintStatus.values()[0], ComplaintStatus.values()[0], new Date()));
 		TimerTask task=new TimerTask() {
@@ -45,7 +46,7 @@ public class KafkaComplaintsProducerApplication {
 							user,
 							new Date(),
 							ComplaintStatus.values()[0],
-							ComplaintSource.values()[source],
+							ComplaintSource.values()[random.nextInt(ComplaintSource.values().length)],
 							"test",
 							new Date(),
 							new ArrayList<>()
