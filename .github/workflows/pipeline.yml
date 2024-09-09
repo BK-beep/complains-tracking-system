@@ -47,7 +47,7 @@ jobs:
         run: chmod +x */mvnw
 
       - name: Build and Test DiscoveryServiceApplication
-        working-directory: DiscoveryServiceApplication
+        working-directory: discovery-service
         run: ./mvnw clean install
 
   build-and-test-apigateway:
@@ -89,7 +89,7 @@ jobs:
         run: chmod +x */mvnw
 
       - name: Build and Test EsSearchApiApplication
-        working-directory: EsSearchApiApplication
+        working-directory: ESSearchAPI
         run: ./mvnw clean install
 
   build-and-test-kafka-consumer:
@@ -110,7 +110,7 @@ jobs:
         run: chmod +x */mvnw
 
       - name: Build and Test KafkaComplaintsConsumerApplication
-        working-directory: KafkaComplaintsConsumerApplication
+        working-directory: kafka-complaints-consumer
         run: ./mvnw clean install
 
   build-and-test-kafka-producer:
@@ -131,34 +131,13 @@ jobs:
         run: chmod +x */mvnw
 
       - name: Build and Test KafkaComplaintsProducerApplication
-        working-directory: KafkaComplaintsProducerApplication
-        run: ./mvnw clean install
-
-  build-and-test-keycloak:
-    name: Build and Test KeycloakApplication
-    runs-on: ubuntu-latest
-    needs: build-and-test-kafka-producer
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          java-version: 17
-          distribution: 'adopt'
-
-      - name: Grant execute permission for mvnw
-        run: chmod +x */mvnw
-
-      - name: Build and Test KeycloakApplication
-        working-directory: KeycloakApplication
+        working-directory: kafka-complaints-producer
         run: ./mvnw clean install
 
   docker-build:
     name: Build Docker Images
     runs-on: ubuntu-latest
-    needs: build-and-test-keycloak
+    needs: build-and-test-kafka-producer
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
