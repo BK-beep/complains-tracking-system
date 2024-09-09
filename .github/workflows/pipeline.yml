@@ -46,9 +46,6 @@ jobs:
       - name: Grant execute permission for mvnw
         run: chmod +x */mvnw
 
-      - name: Start Config Server
-        run: docker run -d -p 8888:8888 your-docker-image-for-config-server
-
       - name: Build and Test DiscoveryServiceApplication
         working-directory: discovery-service
         run: ./mvnw clean install
@@ -56,7 +53,9 @@ jobs:
   build-and-test-apigateway:
     name: Build and Test ApiGatewayKeycloakApplication
     runs-on: ubuntu-latest
-    needs: build-and-test-config
+    needs:
+      - build-and-test-discovery
+      - build-and-test-config
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -77,7 +76,9 @@ jobs:
   build-and-test-es-search:
     name: Build and Test EsSearchApiApplication
     runs-on: ubuntu-latest
-    needs: build-and-test-discovery
+    needs:
+        - build-and-test-discovery
+        - build-and-test-config
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -98,7 +99,9 @@ jobs:
   build-and-test-kafka-consumer:
     name: Build and Test KafkaComplaintsConsumerApplication
     runs-on: ubuntu-latest
-    needs: build-and-test-es-search
+    needs:
+        - build-and-test-discovery
+        - build-and-test-config
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -119,7 +122,9 @@ jobs:
   build-and-test-kafka-producer:
     name: Build and Test KafkaComplaintsProducerApplication
     runs-on: ubuntu-latest
-    needs: build-and-test-kafka-consumer
+    needs:
+        - build-and-test-discovery
+        - build-and-test-config
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
