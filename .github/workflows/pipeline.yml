@@ -9,20 +9,9 @@ on:
       - master
 
 jobs:
-  build-and-test:
-    name: Build and Test
+  build-and-test-apigateway:
+    name: Build and Test ApiGatewayKeycloakApplication
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        service:
-          - { name: 'config-service', java_version: '21' }
-          - { name: 'discovery-service', java_version: '21' }
-          - { name: 'ApiGatewayKeycloak', java_version: '17' }
-          - { name: 'ESSearchAPI', java_version: '17' }
-          - { name: 'kafka-complaints-consumer', java_version: '17' }
-          - { name: 'kafka-complaints-producer', java_version: '21' }
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -30,26 +19,146 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          java-version: ${{ matrix.service.java_version }}
+          java-version: 17
           distribution: 'adopt'
 
       - name: Grant execute permission for mvnw
-        run: chmod +x */mvnw
+        run: chmod +x ApiGatewayKeycloakApplication/mvnw
 
-      - name: Build and Test ${{ matrix.service.name }}
-        working-directory: ${{ matrix.service.name }}
+      - name: Build and Test ApiGatewayKeycloakApplication
+        working-directory: ApiGatewayKeycloakApplication
         run: ./mvnw clean install
 
-      - name: Run Docker Compose files
-        run: |
-          for file in docker-compose*.yml; do
-            docker-compose -f $file up -d
-          done
+  build-and-test-config:
+    name: Build and Test ConfigServiceApplication
+    runs-on: ubuntu-latest
+    needs: build-and-test-apigateway
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: 21
+          distribution: 'adopt'
+
+      - name: Grant execute permission for mvnw
+        run: chmod +x ConfigServiceApplication/mvnw
+
+      - name: Build and Test ConfigServiceApplication
+        working-directory: ConfigServiceApplication
+        run: ./mvnw clean install
+
+  build-and-test-discovery:
+    name: Build and Test DiscoveryServiceApplication
+    runs-on: ubuntu-latest
+    needs: build-and-test-config
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: 21
+          distribution: 'adopt'
+
+      - name: Grant execute permission for mvnw
+        run: chmod +x DiscoveryServiceApplication/mvnw
+
+      - name: Build and Test DiscoveryServiceApplication
+        working-directory: DiscoveryServiceApplication
+        run: ./mvnw clean install
+
+  build-and-test-es-search:
+    name: Build and Test EsSearchApiApplication
+    runs-on: ubuntu-latest
+    needs: build-and-test-discovery
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'adopt'
+
+      - name: Grant execute permission for mvnw
+        run: chmod +x EsSearchApiApplication/mvnw
+
+      - name: Build and Test EsSearchApiApplication
+        working-directory: EsSearchApiApplication
+        run: ./mvnw clean install
+
+  build-and-test-kafka-consumer:
+    name: Build and Test KafkaComplaintsConsumerApplication
+    runs-on: ubuntu-latest
+    needs: build-and-test-es-search
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'adopt'
+
+      - name: Grant execute permission for mvnw
+        run: chmod +x KafkaComplaintsConsumerApplication/mvnw
+
+      - name: Build and Test KafkaComplaintsConsumerApplication
+        working-directory: KafkaComplaintsConsumerApplication
+        run: ./mvnw clean install
+
+  build-and-test-kafka-producer:
+    name: Build and Test KafkaComplaintsProducerApplication
+    runs-on: ubuntu-latest
+    needs: build-and-test-kafka-consumer
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: 21
+          distribution: 'adopt'
+
+      - name: Grant execute permission for mvnw
+        run: chmod +x KafkaComplaintsProducerApplication/mvnw
+
+      - name: Build and Test KafkaComplaintsProducerApplication
+        working-directory: KafkaComplaintsProducerApplication
+        run: ./mvnw clean install
+
+  build-and-test-keycloak:
+    name: Build and Test KeycloakApplication
+    runs-on: ubuntu-latest
+    needs: build-and-test-kafka-producer
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'adopt'
+
+      - name: Grant execute permission for mvnw
+        run: chmod +x KeycloakApplication/mvnw
+
+      - name: Build and Test KeycloakApplication
+        working-directory: KeycloakApplication
+        run: ./mvnw clean install
 
   docker-build:
     name: Build Docker Images
     runs-on: ubuntu-latest
-    needs: build-and-test
+    needs: build-and-test-keycloak
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
