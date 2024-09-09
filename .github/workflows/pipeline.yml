@@ -19,7 +19,7 @@ jobs:
           - config-service
           - discovery-service
           - ApiGatewayKeycloak
-          - EsSearchApi
+          - ESSearchAPI
           - kafka-complaints-consumer
           - kafka-complaints-producer
     steps:
