@@ -21,230 +21,6 @@ jobs:
           - EsSearchApiApplication
           - KafkaComplaintsConsumerApplication
           - KafkaComplaintsProducerApplication
-
-    services:
-        setup:
-          image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
-          volumes:
-            - certs:/usr/share/elasticsearch/config/certs
-          user: "0"
-          command: >
-            bash -c '
-              if [ x${ELASTIC_PASSWORD} == x ]; then
-                echo "Set the ELASTIC_PASSWORD environment variable in the .env file";
-                exit 1;
-              elif [ x${KIBANA_PASSWORD} == x ]; then
-                echo "Set the KIBANA_PASSWORD environment variable in the .env file";
-                exit 1;
-              fi;
-              echo "Setting file permissions"
-              chown -R root:root config/certs;
-              find . -type d -exec chmod 750 \{\} \;;
-              find . -type f -exec chmod 640 \{\} \;;
-              echo "Waiting for Elasticsearch availability";
-              until curl -s http://es01:9200 | grep -q "missing authentication credentials"; do sleep 30; done;
-              echo "Setting kibana_system password";
-              until curl -s -X POST -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" http://es01:9200/_security/user/kibana_system/_password -d "{\"password\":\"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done;
-              echo "All done!";
-            '
-          healthcheck:
-            test: [ "CMD-SHELL", "curl -s http://es01:9200 >/dev/null || exit 1" ]
-            interval: 10s
-            timeout: 10s
-            retries: 120
-        es01:
-          depends_on:
-            setup:
-              condition: service_healthy
-          image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
-          volumes:
-            - esdata01:/usr/share/elasticsearch/data
-          ports:
-            - ${ES_PORT}:9200
-          environment:
-            - node.name=es01
-            - cluster.name=${CLUSTER_NAME}
-            - cluster.initial_master_nodes=es01,es02,es03
-            - discovery.seed_hosts=es02,es03
-            - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
-            - bootstrap.memory_lock=true
-            - xpack.security.enabled=false
-            - xpack.license.self_generated.type=${LICENSE}
-          mem_limit: ${MEM_LIMIT}
-          ulimits:
-            memlock:
-              soft: -1
-              hard: -1
-          healthcheck:
-            test: [ "CMD-SHELL", "curl -s http://localhost:9200 >/dev/null || exit 1" ]
-            interval: 10s
-            timeout: 10s
-            retries: 120
-        es02:
-          depends_on:
-            - es01
-          image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
-          volumes:
-            - esdata02:/usr/share/elasticsearch/data
-          environment:
-            - node.name=es02
-            - cluster.name=${CLUSTER_NAME}
-            - cluster.initial_master_nodes=es01,es02,es03
-            - discovery.seed_hosts=es01,es03
-            - bootstrap.memory_lock=true
-            - xpack.security.enabled=false
-            - xpack.license.self_generated.type=${LICENSE}
-          mem_limit: ${MEM_LIMIT}
-          ulimits:
-            memlock:
-              soft: -1
-              hard: -1
-          healthcheck:
-            test: [ "CMD-SHELL", "curl -s http://localhost:9200 >/dev/null || exit 1" ]
-            interval: 10s
-            timeout: 10s
-            retries: 120
-        es03:
-          depends_on:
-            - es02
-          image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
-          volumes:
-            - esdata03:/usr/share/elasticsearch/data
-          environment:
-            - node.name=es03
-            - cluster.name=${CLUSTER_NAME}
-            - cluster.initial_master_nodes=es01,es02,es03
-            - discovery.seed_hosts=es01,es02
-            - bootstrap.memory_lock=true
-            - xpack.security.enabled=false
-            - xpack.license.self_generated.type=${LICENSE}
-          mem_limit: ${MEM_LIMIT}
-          ulimits:
-            memlock:
-              soft: -1
-              hard: -1
-          healthcheck:
-            test: [ "CMD-SHELL", "curl -s http://localhost:9200 >/dev/null || exit 1" ]
-            interval: 10s
-            timeout: 10s
-            retries: 120
-        kibana:
-          depends_on:
-            es01:
-              condition: service_healthy
-            es02:
-              condition: service_healthy
-            es03:
-              condition: service_healthy
-          image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
-          volumes:
-            - kibanadata:/usr/share/kibana/data
-          ports:
-            - ${KIBANA_PORT}:5601
-          environment:
-            - SERVERNAME=kibana
-            - ELASTICSEARCH_HOSTS=http://es01:9200
-            - ELASTICSEARCH_USERNAME=kibana_system
-            - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
-          mem_limit: ${MEM_LIMIT}
-          healthcheck:
-            test: [ "CMD-SHELL", "curl -s -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'" ]
-            interval: 10s
-            timeout: 10s
-            retries: 120
-        zookeeper:
-          image: confluentinc/cp-zookeeper:latest
-          environment:
-            ZOOKEEPER_CLIENT_PORT: 2181
-            ZOOKEEPER_SERVER_ID: 1
-          ports:
-            - "2181:2181"
-        postgres:
-          image: postgres:16.2
-          volumes:
-            - postgres_data:/var/lib/postgresql/data
-          environment:
-            POSTGRES_DB: ${POSTGRES_DB}
-            POSTGRES_USER: ${POSTGRES_USER}
-            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-          networks:
-            - keycloak_network
-        keycloak:
-          image: quay.io/keycloak/keycloak:23.0.6
-          command: start-dev
-          environment:
-            KC_HOSTNAME: localhost
-            KC_HOSTNAME_PORT: 8181
-            KC_HOSTNAME_STRICT_BACKCHANNEL: false
-            KC_HTTP_ENABLED: true
-            KC_HOSTNAME_STRICT_HTTPS: false
-            KC_HEALTH_ENABLED: true
-            KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
-            KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
-            KC_DB: postgres
-            KC_DB_URL: jdbc:postgresql://postgres/${POSTGRES_DB}
-            KC_DB_USERNAME: ${POSTGRES_USER}
-            KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
-          ports:
-            - 8181:8080
-          restart: always
-          depends_on:
-            - postgres
-          networks:
-            - keycloak_network
-        kafka-1:
-          image: confluentinc/cp-kafka:7.3.0
-          ports:
-            - "9092:9092"
-          environment:
-            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,INTERNAL://kafka-1:19092
-            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,INTERNAL:PLAINTEXT
-            KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
-            KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-            KAFKA_BROKER_ID: 1
-          depends_on:
-            - zookeeper
-        kafka-2:
-          image: confluentinc/cp-kafka:7.3.0
-          ports:
-            - "9093:9093"
-          environment:
-            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9093,INTERNAL://kafka-2:19093
-            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,INTERNAL:PLAINTEXT
-            KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
-            KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-            KAFKA_BROKER_ID: 2
-          depends_on:
-            - zookeeper
-        kafka-3:
-          image: confluentinc/cp-kafka:7.3.0
-          ports:
-            - "9094:9094"
-          environment:
-            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9094,INTERNAL://kafka-3:19094
-            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,INTERNAL:PLAINTEXT
-            KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
-            KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-            KAFKA_BROKER_ID: 3
-          depends_on:
-            - zookeeper
-        networks:
-          keycloak_network:
-            driver: bridge
-        volumes:
-          certs:
-            driver: local
-          esdata01:
-            driver: local
-          esdata02:
-            driver: local
-          esdata03:
-            driver: local
-          kibanadata:
-            driver: local
-          postgres_data:
-            driver: local
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -254,11 +30,14 @@ jobs:
         with:
           java-version: 17
           distribution: 'adopt'
-
       - name: Build and Test ${{ matrix.service }}
         working-directory: ${{ matrix.service }}
         run: ./mvnw clean install
-
+      - name: Run Docker Compose files
+        run: |
+          for file in docker-compose*.yml; do
+            docker-compose -f $file up -d
+          done
   docker-build:
     name: Build Docker Images
     runs-on: ubuntu-latest
@@ -269,14 +48,18 @@ jobs:
 
       - name: Build Docker Images
         run: |
-          docker-compose -f docker-compose.yml build
+          for file in docker-compose*.yml; do
+            docker-compose -f $file build
+          done
 
       - name: Login to DockerHub
         run: echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
       - name: Push Docker Images
         run: |
-          docker-compose -f docker-compose.yml push
+          for file in docker-compose*.yml; do
+            docker-compose -f $file push
+          done
 
   deploy:
       name: Deploy to Production
