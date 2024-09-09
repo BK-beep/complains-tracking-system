@@ -15,12 +15,12 @@ jobs:
     strategy:
       matrix:
         service:
-          - ConfigServiceApplication
-          - DiscoveryServiceApplication
-          - ApiGatewayKeycloakApplication
-          - EsSearchApiApplication
-          - KafkaComplaintsConsumerApplication
-          - KafkaComplaintsProducerApplication
+          - ConfigService
+          - DiscoveryService
+          - ApiGatewayKeycloak
+          - EsSearchApi
+          - KafkaComplaintsConsumer
+          - KafkaComplaintsProducer
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -31,7 +31,7 @@ jobs:
           java-version: 17
           distribution: 'adopt'
       - name: Build and Test ${{ matrix.service }}
-        working-directory: /home/runner/work/complains-tracking-system/${{ matrix.service }}
+        working-directory: ${{ matrix.service }}
         run: ./mvnw clean install
       - name: Run Docker Compose files
         run: |
