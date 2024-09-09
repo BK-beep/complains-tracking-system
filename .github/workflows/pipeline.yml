@@ -23,7 +23,7 @@ jobs:
           distribution: 'adopt'
 
       - name: Grant execute permission for mvnw
-        run: chmod +x ConfigServiceApplication/mvnw
+        run: chmod +x */mvnw
 
       - name: Build and Test ConfigServiceApplication
         working-directory: config-service
@@ -44,7 +44,7 @@ jobs:
           distribution: 'adopt'
 
       - name: Grant execute permission for mvnw
-        run: chmod +x DiscoveryServiceApplication/mvnw
+        run: chmod +x */mvnw
 
       - name: Build and Test DiscoveryServiceApplication
         working-directory: DiscoveryServiceApplication
@@ -65,7 +65,7 @@ jobs:
           distribution: 'adopt'
 
       - name: Grant execute permission for mvnw
-        run: chmod +x ApiGatewayKeycloakApplication/mvnw
+        run: chmod +x */mvnw
 
       - name: Build and Test ApiGatewayKeycloakApplication
         working-directory: ApiGatewayKeycloak
@@ -86,7 +86,7 @@ jobs:
           distribution: 'adopt'
 
       - name: Grant execute permission for mvnw
-        run: chmod +x EsSearchApiApplication/mvnw
+        run: chmod +x */mvnw
 
       - name: Build and Test EsSearchApiApplication
         working-directory: EsSearchApiApplication
@@ -107,7 +107,7 @@ jobs:
           distribution: 'adopt'
 
       - name: Grant execute permission for mvnw
-        run: chmod +x KafkaComplaintsConsumerApplication/mvnw
+        run: chmod +x */mvnw
 
       - name: Build and Test KafkaComplaintsConsumerApplication
         working-directory: KafkaComplaintsConsumerApplication
@@ -128,7 +128,7 @@ jobs:
           distribution: 'adopt'
 
       - name: Grant execute permission for mvnw
-        run: chmod +x KafkaComplaintsProducerApplication/mvnw
+        run: chmod +x */mvnw
 
       - name: Build and Test KafkaComplaintsProducerApplication
         working-directory: KafkaComplaintsProducerApplication
@@ -149,7 +149,7 @@ jobs:
           distribution: 'adopt'
 
       - name: Grant execute permission for mvnw
-        run: chmod +x KeycloakApplication/mvnw
+        run: chmod +x */mvnw
 
       - name: Build and Test KeycloakApplication
         working-directory: KeycloakApplication
