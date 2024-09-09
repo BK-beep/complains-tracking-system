@@ -16,10 +16,10 @@ jobs:
     strategy:
       matrix:
         service:
-          - { name: 'config-service', java_version: '17' }
-          - { name: 'discovery-service', java_version: '17' }
-          - { name: 'ApiGatewayKeycloak', java_version: '21' }
-          - { name: 'ESSearchAPI', java_version: '21' }
+          - { name: 'config-service', java_version: '21' }
+          - { name: 'discovery-service', java_version: '21' }
+          - { name: 'ApiGatewayKeycloak', java_version: '17' }
+          - { name: 'ESSearchAPI', java_version: '17' }
           - { name: 'kafka-complaints-consumer', java_version: '17' }
           - { name: 'kafka-complaints-producer', java_version: '21' }
 
