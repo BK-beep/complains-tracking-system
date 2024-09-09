@@ -46,6 +46,9 @@ jobs:
       - name: Grant execute permission for mvnw
         run: chmod +x */mvnw
 
+      - name: Start Config Server
+        run: docker run -d -p 8888:8888 your-docker-image-for-config-server
+
       - name: Build and Test DiscoveryServiceApplication
         working-directory: discovery-service
         run: ./mvnw clean install
