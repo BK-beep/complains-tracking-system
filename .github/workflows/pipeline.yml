@@ -31,7 +31,7 @@ jobs:
           java-version: 17
           distribution: 'adopt'
       - name: Build and Test ${{ matrix.service }}
-        working-directory: ${{ matrix.service }}
+        working-directory: /home/runner/work/complains-tracking-system/${{ matrix.service }}
         run: ./mvnw clean install
       - name: Run Docker Compose files
         run: |
