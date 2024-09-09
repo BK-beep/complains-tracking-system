@@ -9,30 +9,9 @@ on:
       - master
 
 jobs:
-  build-and-test-apigateway:
-    name: Build and Test ApiGatewayKeycloakApplication
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          java-version: 17
-          distribution: 'adopt'
-
-      - name: Grant execute permission for mvnw
-        run: chmod +x ApiGatewayKeycloakApplication/mvnw
-
-      - name: Build and Test ApiGatewayKeycloakApplication
-        working-directory: ApiGatewayKeycloakApplication
-        run: ./mvnw clean install
-
   build-and-test-config:
     name: Build and Test ConfigServiceApplication
     runs-on: ubuntu-latest
-    needs: build-and-test-apigateway
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -47,7 +26,7 @@ jobs:
         run: chmod +x ConfigServiceApplication/mvnw
 
       - name: Build and Test ConfigServiceApplication
-        working-directory: ConfigServiceApplication
+        working-directory: config-service
         run: ./mvnw clean install
 
   build-and-test-discovery:
@@ -69,6 +48,27 @@ jobs:
 
       - name: Build and Test DiscoveryServiceApplication
         working-directory: DiscoveryServiceApplication
+        run: ./mvnw clean install
+
+  build-and-test-apigateway:
+    name: Build and Test ApiGatewayKeycloakApplication
+    runs-on: ubuntu-latest
+    needs: build-and-test-config
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'adopt'
+
+      - name: Grant execute permission for mvnw
+        run: chmod +x ApiGatewayKeycloakApplication/mvnw
+
+      - name: Build and Test ApiGatewayKeycloakApplication
+        working-directory: ApiGatewayKeycloak
         run: ./mvnw clean install
 
   build-and-test-es-search:
