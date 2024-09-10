@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  config-service:
+    build: ./config-service
+    ports:
+      - "8888:8888"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - microservices-network
+
+  discovery-service:
+    build: ./discovery-service
+    ports:
+      - "8761:8761"
+    depends_on:
+      config-service:
+        condition: service_started
+    environment:
+      - SPRING_CLOUD_CONFIG_URI=http://config-service:8888  # Use the service name here
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - microservices-network
+
+  api-gateway:
+    build: ./ApiGatewayKeycloak
+    ports:
+      - "8080:8080"
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - microservices-network
+
+  es-search:
+    build: ./ESSearchAPI
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    networks:
+      - microservices-network
+
+  kafka-consumer:
+    build: ./kafka-complaints-consumer
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    networks:
+      - microservices-network
+
+  kafka-producer:
+    build: ./kafka-complaints-producer
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
+    driver: host

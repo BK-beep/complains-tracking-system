@@ -1,14 +1,17 @@
-# Use an official OpenJDK runtime as a parent image
-FROM openjdk:21-jdk-slim
-
-# Set the working directory inside the container
+# Build stage
+FROM maven:3.9.9 AS build
 WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-# Copy the JAR file from the target directory to the container
-COPY target/*.jar app.jar
+# Run stage
+FROM openjdk:21-jdk-slim
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 
-# Expose the port that your microservice will run on
+# Install networking tools
+RUN apt-get update && apt-get install -y curl iputils-ping dnsutils
+
 EXPOSE 8080
-
-# Command to run the JAR file
 ENTRYPOINT ["java", "-jar", "app.jar"]
