@@ -4,8 +4,10 @@ spring:
   kafka:
     producer:
       type-mappings: Complaint:ma.attijari.kafkacomplantsproducer.models.Complaint
-      bootstrap-servers: localhost:9092
+      bootstrap-servers: kafka-1:9092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     template:
       default-topic: complaints
+server:
+  port: 8181

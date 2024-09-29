@@ -18,12 +18,14 @@ public class SecurityConfig {
 
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+        System.out.println("SecurityConfig.springSecurityFilterChain"+http);
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf-> csrf.disable())
                 .authorizeExchange(exchanges -> exchanges
                         //.pathMatchers("/ESSearchAPI/**").permitAll()
-                        .pathMatchers("/").permitAll()
+                        .pathMatchers("/api/auth").permitAll()
+                        .pathMatchers("/ESSearchAPI/**").permitAll()
                         .anyExchange().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
@@ -35,7 +37,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200")); // Specify exact origin
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200", "http://localhost:9876")); // Specify exact origin
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Specify methods
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true); // Allow credentials

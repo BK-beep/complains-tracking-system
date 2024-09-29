@@ -29,6 +29,8 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
+    networks:
+      - microservices-network
 
   es01:
     depends_on:
@@ -58,6 +60,8 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
+    networks:
+      - microservices-network
 
   es02:
     depends_on:
@@ -83,6 +87,8 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
+    networks:
+      - microservices-network
 
   es03:
     depends_on:
@@ -108,6 +114,8 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
+    networks:
+      - microservices-network
 
   kibana:
     depends_on:
@@ -133,6 +141,8 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
+    networks:
+      - microservices-network
 
 volumes:
   certs:
@@ -145,3 +155,7 @@ volumes:
     driver: local
   kibanadata:
     driver: local
+
+networks:
+  microservices-network:
+    driver: bridge

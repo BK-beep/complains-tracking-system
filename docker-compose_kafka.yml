@@ -7,7 +7,8 @@ services:
       ZOOKEEPER_SERVER_ID: 1
     ports:
       - "2181:2181"
-
+    networks:
+      - microservices-network
   kafka-1:
     image: confluentinc/cp-kafka:7.3.0
     ports:
@@ -20,7 +21,8 @@ services:
       KAFKA_BROKER_ID: 1
     depends_on:
       - zookeeper
-
+    networks:
+      - microservices-network
   kafka-2:
     image: confluentinc/cp-kafka:7.3.0
     ports:
@@ -33,7 +35,8 @@ services:
       KAFKA_BROKER_ID: 2
     depends_on:
       - zookeeper
-
+    networks:
+      - microservices-network
   kafka-3:
     image: confluentinc/cp-kafka:7.3.0
     ports:
@@ -46,3 +49,8 @@ services:
       KAFKA_BROKER_ID: 3
     depends_on:
       - zookeeper
+    networks:
+      - microservices-network
+networks:
+  microservices-network:
+    driver: bridge
